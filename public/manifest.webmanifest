@@ -1,0 +1,21 @@
+{
+  "name": "OurSpace",
+  "short_name": "OurSpace",
+  "description": "Ruang kecil private untuk kamu dan pasangan.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff8f1",
+  "theme_color": "#fff8f1",
+  "categories": ["lifestyle", "productivity"],
+  "icons": [
+    {
+      "src": "/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

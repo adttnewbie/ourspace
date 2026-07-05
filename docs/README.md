@@ -10,6 +10,12 @@ Dokumentasi ini menjadi blueprint awal untuk membangun OurSpace: web app private
 - [UI Direction](./ui-direction.md): arah visual scrapbook, home, navigasi, dan motion.
 - [Data Model](./data-model.md): struktur sheet untuk pairing, member, settings, sticky notes, dan fase lanjut.
 - [API Contract](./api-contract.md): action API Apps Script untuk pairing, home, dan notes v1.
+- [API Proxy](./api-proxy.md): same-origin proxy agar frontend tidak kena CORS Apps Script.
+- [Backup](./backup.md): cara kerja backup JSON private, trigger harian, dan batasan restore.
+- [Deployment](./deployment.md): langkah deploy Vercel, env, dan smoke test production.
+- [Performance](./performance.md): catatan cache ringan, lazy route, dan batasan Apps Script.
+- [Production Checklist](./production-checklist.md): checklist env, Apps Script, Drive, Vercel, dan manual test sebelum dipakai harian.
+- [Live Testing](./live-testing.md): checklist deploy, pairing, Home, dan Notes CRUD sebelum fitur baru.
 - [MVP Roadmap](./mvp-roadmap.md): urutan build dari docs sampai fitur lanjutan.
 
 ## Stack awal

@@ -1,0 +1,12 @@
+{
+  "buildCommand": "bun run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/pairing", "destination": "/index.html" },
+    { "source": "/notes", "destination": "/index.html" },
+    { "source": "/dates", "destination": "/index.html" },
+    { "source": "/gallery", "destination": "/index.html" },
+    { "source": "/lists", "destination": "/index.html" },
+    { "source": "/settings", "destination": "/index.html" }
+  ]
+}
