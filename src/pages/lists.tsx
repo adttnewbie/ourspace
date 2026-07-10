@@ -465,7 +465,7 @@ export function ListsPage() {
 
   return (
     <div className="space-y-4">
-      <header className="flex items-start justify-between gap-4">
+      <header className="page-header flex items-start justify-between gap-4">
         <div>
           <p className="text-xs font-extrabold uppercase tracking-[0.04em] text-muted-foreground">
             Shared Lists
@@ -477,7 +477,7 @@ export function ListsPage() {
         </div>
         <Button
           aria-label="Tambah item wishlist"
-          className="mt-1 shrink-0"
+          className="page-action mt-1 shrink-0"
           onClick={() => setIsCreateOpen(true)}
           size="icon"
         >

@@ -16,14 +16,22 @@ function validateSession(request) {
     throw newAppError('SESSION_INVALID', 'Invalid session')
   }
 
-  updateObjectRow('members', member.rowNumber, {
-    lastSeenAt: nowIso(),
-  })
+  if (shouldRefreshLastSeen(member.lastSeenAt)) {
+    updateObjectRow('members', member.rowNumber, {
+      lastSeenAt: nowIso(),
+    })
+  }
 
   return {
     memberId: member.id,
     nickname: member.nickname,
   }
+}
+
+function shouldRefreshLastSeen(lastSeenAt) {
+  var timestamp = new Date(lastSeenAt).getTime()
+
+  return !Number.isFinite(timestamp) || Date.now() - timestamp >= 600000
 }
 
 function getSessionResume(request) {

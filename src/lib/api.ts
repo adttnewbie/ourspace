@@ -757,6 +757,7 @@ export type GalleryCreateInput = {
   readonly mimeType: string
   readonly fileSize: number
   readonly base64: string
+  readonly thumbnailData?: string
   readonly caption: string
   readonly takenAt: string
 }
@@ -806,7 +807,7 @@ export async function resumeSession(options: ResumeSessionOptions = {}) {
 }
 
 export function recoverSession(input: SessionRecoverInput) {
-  cachedSessionResume = null
+  clearApiCaches()
   return apiRequest('session.recover', input)
 }
 

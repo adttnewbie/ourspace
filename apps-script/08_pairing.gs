@@ -47,7 +47,7 @@ function findPairingSession(pairingSessionId) {
   })
 }
 
-function findReusablePairingSession(nickname) {
+function findReusablePairingSession() {
   return getSheetObjects('pairing_sessions').find(function (row) {
     if (row.status !== 'waiting') {
       return false
@@ -57,7 +57,7 @@ function findReusablePairingSession(nickname) {
       return false
     }
 
-    return !row.firstNickname || row.firstNickname !== nickname
+    return true
   })
 }
 
@@ -67,7 +67,7 @@ function pairingStart(request) {
   return withScriptLock(function () {
     requireCoupleNotPaired()
     var nickname = requireNickname(request.payload.nickname)
-    var reusableSession = findReusablePairingSession(nickname)
+    var reusableSession = findReusablePairingSession()
 
     if (reusableSession) {
       return {

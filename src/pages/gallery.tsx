@@ -60,6 +60,7 @@ type EditEditor = {
 }
 
 const maxPhotoSize = 5 * 1024 * 1024
+const maxThumbnailDataLength = 40_000
 const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'] as const
 
 function getErrorMessage(error: unknown) {
@@ -129,6 +130,51 @@ function fileToBase64(file: File) {
     })
     reader.readAsDataURL(file)
   })
+}
+
+async function createThumbnailData(file: File) {
+  const objectUrl = URL.createObjectURL(file)
+
+  try {
+    const image = new Image()
+    image.src = objectUrl
+    await image.decode()
+
+    const maxSide = 320
+    let scale = Math.min(
+      1,
+      maxSide / Math.max(image.naturalWidth, image.naturalHeight),
+    )
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const canvas = document.createElement('canvas')
+      canvas.width = Math.max(1, Math.round(image.naturalWidth * scale))
+      canvas.height = Math.max(1, Math.round(image.naturalHeight * scale))
+      const context = canvas.getContext('2d')
+
+      if (!context) {
+        return ''
+      }
+
+      context.drawImage(image, 0, 0, canvas.width, canvas.height)
+      const thumbnailData = canvas.toDataURL(
+        'image/jpeg',
+        Math.max(0.35, 0.75 - attempt * 0.1),
+      )
+
+      if (thumbnailData.length <= maxThumbnailDataLength) {
+        return thumbnailData
+      }
+
+      scale *= 0.7
+    }
+
+    return ''
+  } catch {
+    return ''
+  } finally {
+    URL.revokeObjectURL(objectUrl)
+  }
 }
 
 function validateUpload(editor: UploadEditor) {
@@ -280,13 +326,17 @@ export function GalleryPage() {
     setUploadEditor({ ...uploadEditor, error: '' })
 
     try {
-      const base64 = await fileToBase64(uploadEditor.file)
+      const [base64, thumbnailData] = await Promise.all([
+        fileToBase64(uploadEditor.file),
+        createThumbnailData(uploadEditor.file),
+      ])
 
       const data = await createGalleryItem({
         fileName: uploadEditor.file.name,
         mimeType: uploadEditor.file.type,
         fileSize: uploadEditor.file.size,
         base64,
+        thumbnailData,
         caption: uploadEditor.caption.trim(),
         takenAt: uploadEditor.takenAt,
       })
@@ -380,7 +430,7 @@ export function GalleryPage() {
 
   return (
     <div className="space-y-5">
-      <header className="flex items-start justify-between gap-4">
+      <header className="page-header flex items-start justify-between gap-4">
         <div>
           <p className="text-xs font-extrabold uppercase tracking-[0.04em] text-muted-foreground">
             Gallery
@@ -392,7 +442,7 @@ export function GalleryPage() {
         </div>
         <Button
           aria-label="Upload foto"
-          className="mt-1 shrink-0"
+          className="page-action mt-1 shrink-0"
           onClick={() => setIsUploadOpen(true)}
           size="icon"
         >
@@ -503,7 +553,7 @@ export function GalleryPage() {
 
       <ConfirmAlertDialog
         confirmLabel="Hapus"
-        description="Metadata foto disembunyikan dari gallery. File Drive tetap disimpan private."
+        description="Foto akan dihapus dari gallery dan dipindahkan ke Trash di Drive."
         isOpen={deleteTarget !== null}
         onCancel={() => setDeleteTarget(null)}
         onConfirm={() => {
@@ -580,8 +630,8 @@ function GalleryUploadForm({
           />
         </label>
         <p className="rounded-[1.15rem] bg-scrap-yellow px-4 py-3 text-xs font-extrabold leading-relaxed text-muted-foreground">
-          Original foto tetap private di Drive. Untuk foto besar, preview gallery
-          mungkin tampil sebagai placeholder.
+          Preview kecil akan dibuat di device ini. Original foto tetap private di
+          Drive.
         </p>
         <Textarea
           aria-label="Caption foto"

@@ -712,7 +712,7 @@ function SettingsHeader({
   readonly title: string
 }) {
   return (
-    <header>
+    <header className="page-header">
       {back ? (
         <Link
           className="text-sm font-extrabold text-muted-foreground"
@@ -744,7 +744,7 @@ function SettingsMenuCard({
   readonly tone: 'blue' | 'mint' | 'pink'
 }) {
   return (
-    <Link className="block" to={to}>
+    <Link className="group block" to={to}>
       <ScrapbookCard tone={tone}>
         <div className="flex items-center gap-3">
           {icon}

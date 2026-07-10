@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'node:http'
 
 type OurSpaceErrorCode = 'BAD_REQUEST' | 'CONFIG_MISSING' | 'INTERNAL_ERROR'
+const maxRequestBodyBytes = 7 * 1024 * 1024
 
 type ApiRequest = IncomingMessage & {
   readonly body?: unknown
@@ -44,18 +45,37 @@ function isOurSpaceJson(body: string) {
 }
 
 function bodyFromRequest(request: ApiRequest) {
+  const contentLength = Number(request.headers['content-length'] ?? 0)
+
+  if (Number.isFinite(contentLength) && contentLength > maxRequestBodyBytes) {
+    return Promise.reject(new Error('Request body terlalu besar'))
+  }
+
   if (typeof request.body === 'string') {
+    if (Buffer.byteLength(request.body, 'utf8') > maxRequestBodyBytes) {
+      return Promise.reject(new Error('Request body terlalu besar'))
+    }
     return Promise.resolve(request.body)
   }
 
   if (Buffer.isBuffer(request.body)) {
+    if (request.body.byteLength > maxRequestBodyBytes) {
+      return Promise.reject(new Error('Request body terlalu besar'))
+    }
     return Promise.resolve(request.body.toString('utf8'))
   }
 
   return new Promise<string>((resolve, reject) => {
     const chunks: Buffer[] = []
 
+    let totalBytes = 0
     request.on('data', (chunk: Buffer) => {
+      totalBytes += chunk.length
+      if (totalBytes > maxRequestBodyBytes) {
+        reject(new Error('Request body terlalu besar'))
+        request.resume()
+        return
+      }
       chunks.push(chunk)
     })
     request.on('end', () => {
@@ -123,6 +143,11 @@ export default async function handler(
     sendJson(response, upstreamResponse.status, upstreamBody)
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Proxy request failed'
+    if (message === 'Request body terlalu besar') {
+      sendJson(response, 413, jsonError('BAD_REQUEST', message))
+      return
+    }
+
     sendJson(response, 502, jsonError('INTERNAL_ERROR', message))
   }
 }

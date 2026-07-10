@@ -18,9 +18,12 @@ const navItems = [
 
 export function AppShell() {
   return (
-    <div className="min-h-dvh bg-background text-foreground">
-      <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col overflow-hidden border-x bg-background shadow-[0_24px_80px_rgb(103_74_58_/_0.14)]">
-        <main className="flex-1 px-4 pb-32 pt-5 sm:px-5">
+    <div className="app-canvas min-h-dvh bg-background text-foreground">
+      <div className="app-shell mx-auto flex min-h-dvh w-full max-w-[480px] flex-col overflow-hidden border-x bg-background shadow-[0_24px_80px_rgb(103_74_58_/_0.14)]">
+        <a className="skip-link" href="#app-content">
+          Langsung ke konten
+        </a>
+        <main className="flex-1 px-4 pb-32 pt-6 sm:px-5" id="app-content">
           <Outlet />
         </main>
         <nav
@@ -35,8 +38,8 @@ export function AppShell() {
                 <NavLink
                   className={({ isActive }) =>
                     cn(
-                      'flex h-14 flex-col items-center justify-center gap-1 rounded-2xl text-muted-foreground transition-[background-color,color,transform] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:scale-[0.98]',
-                      isActive && 'bg-scrap-yellow text-foreground',
+                      'relative flex h-14 flex-col items-center justify-center gap-1 rounded-2xl text-muted-foreground transition-[background-color,color,transform] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:scale-[0.98]',
+                      isActive && 'bg-scrap-yellow text-foreground shadow-[0_8px_18px_rgb(103_74_58_/_0.10)]',
                     )
                   }
                   end={item.to === '/'}

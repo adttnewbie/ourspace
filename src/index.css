@@ -116,10 +116,19 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+::selection {
+  background: color-mix(in srgb, var(--primary) 28%, transparent);
+  color: var(--foreground);
+}
+
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100dvh;
+  background:
+    radial-gradient(circle at 12% 8%, rgb(255 210 223 / 0.42), transparent 24rem),
+    radial-gradient(circle at 88% 16%, rgb(191 232 212 / 0.40), transparent 22rem),
+    var(--background);
 }
 
 button,
@@ -136,8 +145,112 @@ button:disabled {
   cursor: not-allowed;
 }
 
+button,
+a,
+input,
+textarea,
+[role='button'] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+input,
+textarea {
+  transition: border-color 150ms ease-out, box-shadow 150ms ease-out,
+    background-color 150ms ease-out;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: color-mix(in srgb, var(--muted-foreground) 72%, transparent);
+}
+
+input:focus-visible,
+textarea:focus-visible {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 22%, transparent);
+}
+
 #root {
   min-height: 100dvh;
+}
+
+.app-canvas {
+  background-image: radial-gradient(rgb(125 105 117 / 0.13) 0.75px, transparent 0.75px);
+  background-size: 16px 16px;
+}
+
+.app-shell {
+  isolation: isolate;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 50;
+  left: 1rem;
+  top: -4rem;
+  border-radius: 999px;
+  background: var(--foreground);
+  color: var(--background);
+  padding: 0.65rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 800;
+  transition: top 150ms ease-out;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+.paper-card {
+  overflow: clip;
+}
+
+.paper-card::after {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  inset: 7px;
+  border: 1px dashed rgb(125 105 117 / 0.15);
+  border-radius: calc(1.75rem - 7px);
+  opacity: 0.75;
+}
+
+.paper-card > :not([aria-hidden='true']) {
+  position: relative;
+  z-index: 1;
+}
+
+.page-header {
+  position: relative;
+  padding-bottom: 0.4rem;
+}
+
+.page-header::after {
+  content: '';
+  display: block;
+  width: 4.25rem;
+  height: 0.35rem;
+  margin-top: 0.9rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--primary), var(--accent-yellow));
+}
+
+.page-action {
+  box-shadow: 0 10px 24px rgb(241 111 143 / 0.28);
+}
+
+.group:hover .paper-card {
+  transform: translateY(-2px) rotate(-0.15deg);
+  box-shadow: 0 16px 34px rgb(103 74 58 / 0.16);
+}
+
+.paper-card {
+  transition: transform 180ms ease-out, box-shadow 180ms ease-out;
+}
+
+@media (min-width: 640px) {
+  .app-shell {
+    border-radius: 2rem 2rem 0 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

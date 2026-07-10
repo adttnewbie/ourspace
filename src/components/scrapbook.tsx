@@ -28,7 +28,7 @@ export function ScrapbookCard({
   return (
     <section
       className={cn(
-        'relative rounded-[1.75rem] border p-4 shadow-[0_10px_30px_rgb(103_74_58_/_0.10)] sm:p-5',
+        'paper-card relative rounded-[1.75rem] border p-4 shadow-[0_10px_30px_rgb(103_74_58_/_0.10)] sm:p-5',
         cardTones[tone],
         className,
       )}

@@ -283,7 +283,7 @@ export function NotesPage() {
 
   return (
     <div className="space-y-5">
-      <header className="flex items-start justify-between gap-4">
+      <header className="page-header flex items-start justify-between gap-4">
         <div>
           <p className="text-xs font-extrabold uppercase tracking-[0.04em] text-muted-foreground">
             Sticky Notes
@@ -295,7 +295,7 @@ export function NotesPage() {
         </div>
         <Button
           aria-label="Buat note baru"
-          className="mt-1 shrink-0"
+          className="page-action mt-1 shrink-0"
           onClick={() => setIsCreateOpen(true)}
           size="icon"
         >

@@ -328,20 +328,27 @@ function galleryCreate(request) {
 
   var timestamp = nowIso()
   var fileId = saveGalleryBlob(fileName, mimeType, bytes)
-  var item = appendObjectRow('gallery', {
-    id: newId('photo'),
-    fileId: fileId,
-    fileName: fileName,
-    mimeType: mimeType,
-    fileSize: fileSize,
-    thumbnailData: createGalleryThumbnailData(mimeType, base64, fileSize),
-    caption: caption,
-    takenAt: takenAt,
-    createdBy: session.memberId,
-    createdAt: timestamp,
-    updatedAt: timestamp,
-    deletedAt: '',
-  })
+  var item
+
+  try {
+    item = appendObjectRow('gallery', {
+      id: newId('photo'),
+      fileId: fileId,
+      fileName: fileName,
+      mimeType: mimeType,
+      fileSize: fileSize,
+      thumbnailData: normalizeGalleryThumbnailData(request.payload.thumbnailData),
+      caption: caption,
+      takenAt: takenAt,
+      createdBy: session.memberId,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      deletedAt: '',
+    })
+  } catch (error) {
+    trashGalleryFile(fileId)
+    throw error
+  }
 
   return {
     item: formatGalleryItem(item, session.memberId, {
@@ -393,6 +400,8 @@ function galleryDelete(request) {
     deletedAt: timestamp,
     updatedAt: timestamp,
   })
+
+  trashGalleryFile(item.fileId)
 
   return {
     id: item.id,
@@ -862,12 +871,22 @@ function normalizeGalleryTakenAt(value) {
   return new Date(timestamp).toISOString().slice(0, 10)
 }
 
-function createGalleryThumbnailData(mimeType, base64, fileSize) {
-  if (fileSize <= 1200000) {
-    return 'data:' + mimeType + ';base64,' + base64
+function normalizeGalleryThumbnailData(value) {
+  var thumbnailData = String(value || '').trim()
+
+  if (!thumbnailData) {
+    return ''
   }
 
-  return ''
+  if (!/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(thumbnailData)) {
+    throw newAppError('BAD_REQUEST', 'Preview foto tidak valid')
+  }
+
+  if (thumbnailData.length > 40000) {
+    throw newAppError('BAD_REQUEST', 'Preview foto terlalu besar')
+  }
+
+  return thumbnailData
 }
 
 function normalizeSharedListTitle(value) {

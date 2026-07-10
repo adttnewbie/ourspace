@@ -483,7 +483,7 @@ export function DatesPage() {
 
   return (
     <div className="space-y-4">
-      <header className="flex items-start justify-between gap-4">
+      <header className="page-header flex items-start justify-between gap-4">
         <div>
           <p className="text-xs font-extrabold uppercase tracking-[0.04em] text-muted-foreground">
             Date Plans
@@ -497,7 +497,7 @@ export function DatesPage() {
         </div>
         <Button
           aria-label="Buat rencana date"
-          className="mt-1 shrink-0"
+          className="page-action mt-1 shrink-0"
           onClick={() => {
             setViewMode('list')
             setIsCreateOpen(true)

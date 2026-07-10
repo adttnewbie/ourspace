@@ -60,3 +60,15 @@ function saveGalleryBlob(fileName, mimeType, bytes) {
     )
   }
 }
+
+function trashGalleryFile(fileId) {
+  if (!fileId) {
+    return
+  }
+
+  try {
+    DriveApp.getFileById(fileId).setTrashed(true)
+  } catch (error) {
+    console.error(error)
+  }
+}

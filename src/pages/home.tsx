@@ -489,7 +489,7 @@ function SummaryCard({
   readonly tone: 'blue' | 'lavender' | 'mint' | 'yellow'
 }) {
   return (
-    <Link to={to}>
+    <Link className="group block" to={to}>
       <ScrapbookCard className="p-4" tone={tone}>
         <div className="flex items-start gap-3">
           <div className="mt-1 shrink-0">{icon}</div>
