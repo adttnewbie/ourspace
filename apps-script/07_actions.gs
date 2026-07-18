@@ -58,6 +58,14 @@ function routeAction(request) {
       return backupsList(request)
     case 'backup.runNow':
       return backupRunNow(request)
+    case 'maintenance.runNow':
+      return maintenanceRunNow(request)
+    case 'maintenance.installTrigger':
+      return maintenanceInstallTrigger()
+    case 'maintenance.removeTrigger':
+      return maintenanceRemoveTrigger()
+    case 'maintenance.status':
+      return maintenanceStatus()
     default:
       throw newAppError('NOT_FOUND', 'Unknown action: ' + request.action)
   }
@@ -978,4 +986,30 @@ function normalizeSharedListStatus(value) {
 
 function normalizeOptionalSharedListText(value) {
   return String(value || '').trim()
+}
+
+function maintenanceRunNow(request) {
+  validateSession(request)
+
+  return runMaintenance()
+}
+
+function maintenanceInstallTrigger() {
+  return installMaintenanceTrigger()
+}
+
+function maintenanceRemoveTrigger() {
+  return removeMaintenanceTriggers()
+}
+
+function maintenanceStatus() {
+  var triggers = ScriptApp.getProjectTriggers().filter(function (trigger) {
+    return trigger.getHandlerFunction() === 'runMaintenance'
+  })
+
+  return {
+    installed: triggers.length > 0,
+    triggerCount: triggers.length,
+    retentionDays: getMaintenanceRetentionDays(),
+  }
 }
