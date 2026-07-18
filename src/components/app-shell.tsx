@@ -5,8 +5,10 @@ import {
   MoreHorizontal,
   NotebookText,
 } from 'lucide-react'
+import { useEffect } from 'react'
 import { NavLink, Outlet } from 'react-router'
 import { OfflineNotice } from '@/components/offline-notice'
+import { isNativePlatform } from '@/lib/platform'
 import { useOnlineStatus } from '@/lib/online-status'
 import { cn } from '@/lib/utils'
 
@@ -20,6 +22,19 @@ const navItems = [
 
 export function AppShell() {
   const { hasHydrated, isOnline } = useOnlineStatus()
+
+  useEffect(() => {
+    if (!isNativePlatform()) return
+
+    const setupStatusBar = async () => {
+      const { StatusBar, Style } = await import('@capacitor/status-bar')
+      await StatusBar.setStyle({ style: Style.Dark })
+      await StatusBar.setBackgroundColor({ color: '#fff8f1' })
+      await StatusBar.setOverlaysWebView({ overlay: false })
+    }
+
+    setupStatusBar()
+  }, [])
 
   return (
     <div className="app-canvas min-h-dvh bg-background text-foreground">

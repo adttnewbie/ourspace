@@ -1,9 +1,10 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router'
+import { HashRouter } from 'react-router'
 import './index.css'
 import { App } from './App.tsx'
 import { ErrorBoundary } from '@/components/error-boundary'
+import { isNativePlatform } from '@/lib/platform'
 import { registerServiceWorker } from '@/lib/service-worker'
 import { Toaster } from '@/components/ui/sonner'
 
@@ -16,14 +17,14 @@ if (root === null) {
 createRoot(root).render(
   <StrictMode>
     <ErrorBoundary>
-      <BrowserRouter>
+      <HashRouter>
         <App />
         <Toaster />
-      </BrowserRouter>
+      </HashRouter>
     </ErrorBoundary>
   </StrictMode>,
 )
 
-if (!import.meta.env.DEV) {
+if (!import.meta.env.DEV && !isNativePlatform()) {
   registerServiceWorker()
 }

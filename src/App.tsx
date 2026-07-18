@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react'
-import { lazy, Suspense } from 'react'
-import { Navigate, Route, Routes } from 'react-router'
+import { lazy, Suspense, useEffect } from 'react'
+import { Navigate, Route, Routes, useNavigate } from 'react-router'
 import { AppShell } from '@/components/app-shell'
 import { SettingsSkeleton } from '@/components/loading-skeleton'
 import { ScrapbookCard } from '@/components/scrapbook'
 import { SessionGate } from '@/components/session-gate'
+import { isNativePlatform } from '@/lib/platform'
 import { HomePage } from '@/pages/home'
 import { PairingPage } from '@/pages/pairing'
 import { OfflinePage } from '@/pages/offline'
@@ -55,6 +56,36 @@ function lazyRoute(element: ReactNode, fallback: ReactNode = <RouteFallback />) 
 }
 
 export function App() {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!isNativePlatform()) return
+
+    let cancelled = false
+
+    const setupBackButton = async () => {
+      const { App: CapacitorApp } = await import('@capacitor/app')
+      const listener = await CapacitorApp.addListener('backButton', ({ canGoBack }) => {
+        if (cancelled) return
+        if (!canGoBack) {
+          CapacitorApp.exitApp()
+        } else {
+          navigate(-1)
+        }
+      })
+
+      if (cancelled) {
+        listener.remove()
+      }
+    }
+
+    setupBackButton()
+
+    return () => {
+      cancelled = true
+    }
+  }, [navigate])
+
   return (
     <Routes>
       <Route path="/pairing" element={<PairingPage />} />
